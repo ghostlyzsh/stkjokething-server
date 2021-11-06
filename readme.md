@@ -1,1 +1,2 @@
-[![StarKingdoms](https://circleci.com/gh/StarKingdoms/starkingdoms-server.svg?style=svg)](https://circleci.com/gh/StarKingdoms/starkingdoms-server)
+## building
+Clone repo, run `make clean`, run `make`, output file in `bin/server`
