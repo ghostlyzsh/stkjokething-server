@@ -24,4 +24,7 @@ clean:
 server:
 	rm -rf bin
 	mkdir bin
-	clang++ -Wall -o bin/server -I include src/main.cpp lib/libbox2d.a lib/libglad.a lib/libglfw.a lib/libimgui.a lib/libsajson.a -lpthread
+	clang++ -Wall -o bin/server -I opt_include -I include src/main.cpp lib/libbox2d.a lib/libglad.a lib/libglfw.a lib/libimgui.a lib/libsajson.a -lpthread -lboost
+
+run: all
+	./bin/server
