@@ -20,3 +20,8 @@ clean:
 	cd dependencies/box2d/build; make clean
 	rm -rf lib
 	rm -rf bin
+
+server:
+	rm -rf bin
+	mkdir bin
+	clang++ -Wall -o bin/server -I include src/main.cpp lib/libbox2d.a lib/libglad.a lib/libglfw.a lib/libimgui.a lib/libsajson.a
