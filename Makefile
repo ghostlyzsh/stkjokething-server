@@ -14,7 +14,7 @@ box2d:
 all: box2d
 	@rm -rf bin
 	@mkdir bin
-	@clang++ -Wall -o bin/server -I include src/main.cpp lib/libbox2d.a lib/libglad.a lib/libglfw.a lib/libimgui.a lib/libsajson.a -lpthread
+	@clang++ -Wall -o bin/server -L opt_include -I opt_include -I include src/main.cpp lib/libbox2d.a lib/libglad.a lib/libglfw.a lib/libimgui.a lib/libsajson.a -lpthread -std=c++17 -Wc++17-extensions
 
 clean:
 	@cd dependencies/box2d/build; make clean
@@ -24,7 +24,7 @@ clean:
 server:
 	@rm -rf bin
 	@mkdir bin
-	@clang++ -Wall -o bin/server -I opt_include -I include src/main.cpp lib/libbox2d.a lib/libglad.a lib/libglfw.a lib/libimgui.a lib/libsajson.a -lpthread -lboost
+	@clang++ -Wall -o bin/server -L opt_include -I opt_include -I include src/main.cpp lib/libbox2d.a lib/libglad.a lib/libglfw.a lib/libimgui.a lib/libsajson.a -lpthread -std=c++17 -Wc++17-extensions
 
 run: all
 	@./bin/server
