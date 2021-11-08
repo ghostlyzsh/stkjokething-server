@@ -12,6 +12,7 @@
 #include <functional>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include "box2d.h" // Import the box2d gluefile to import all of b2d
 
@@ -30,6 +31,20 @@ namespace net = boost::asio;
 using tcp = boost::asio::ip::tcp;
 
 using namespace logging;
+
+class Client {
+    public:
+	std::string identifier;
+	std::string msg;
+	Message(std::string to, std::string msg) {
+	    this->to = to;
+	    this->msg = msg;
+	}
+}
+
+std::vector<std::string> cmNDP;
+std::vector<std::string> jreqNDP;
+std::vector<Message> msgsNDP;
 
 // Websocket handler code
 void do_session(tcp::socket socket) {
@@ -51,7 +66,16 @@ void do_session(tcp::socket socket) {
 	    ws.read(buffer); // Get message from client
 
 	    ws.text(ws.got_text());
-	    ws.write(buffer.data()); // Echo data back
+	    
+	    std::string cmsg = "CHATMSG;";
+	    std::string jreq = "JOINREQUEST;";
+	    if (cmsg.rfind(buffer.data(), 0) == 0) {
+		// chat message
+		cmNDP.push_back(buffer.data());
+	    } else if (jreq.rfind(buffer.data(), 0) == 0) {
+		// join request
+		jreqNDP.push_back(buffer.data());
+	    }
 	}
     } catch (beast::system_error const& se) {
 	// Session was closed
@@ -64,28 +88,32 @@ void do_session(tcp::socket socket) {
     log("ConnectionHandler", "Disconnected");
 }
 
+void handler_task() {
+    try {
+        auto const address = net::ip::make_address("127.0.0.1");
+        auto const port = static_cast<unsigned short>(std::atoi("8443"));
+
+        net::io_context ioctx{1};
+
+        tcp::acceptor acceptor{ioctx, {address, port}};
+        for (;;) {
+            tcp::socket socket{ioctx};
+
+            acceptor.accept(socket);
+
+            log("ConnectionHandler", "New connection");
+
+            std::thread(&do_session, std::move(socket)).detach();
+        }
+    } catch (const std::exception& e) {
+        error("ServerThread", e.what());
+        return EXIT_FAILURE;
+    }
+}
+
 int main(int argc, char** argv) {
     log("ServerThread", "Welcome to StarKingdoms! Version: " + starkingdoms_version);
     log("ServerThread", "Initializing websocket connections");
 
-    try {
-	auto const address = net::ip::make_address("127.0.0.1");
-	auto const port = static_cast<unsigned short>(std::atoi("8443"));
-
-	net::io_context ioctx{1};
-
-	tcp::acceptor acceptor{ioctx, {address, port}};
-	for (;;) {
-	    tcp::socket socket{ioctx};
-
-	    acceptor.accept(socket);
-
-	    log("ConnectionHandler", "New connection");
-
-	    std::thread(&do_session, std::move(socket)).detach();
-	}
-    } catch (const std::exception& e) {
-	error("ServerThread", e.what());
-	return EXIT_FAILURE;
-    }
+    std::thread()
 }
