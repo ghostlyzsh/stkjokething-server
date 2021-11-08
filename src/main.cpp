@@ -30,7 +30,7 @@ using tcp = boost::asio::ip::tcp;
 using namespace logging;
 
 // Error reporting
-void fail(beast::error_code ec, std::string) {
+void fail(beast::error_code ec, std::string what) {
     error(what, ec.message());
 }
 
