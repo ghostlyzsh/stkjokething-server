@@ -109,6 +109,7 @@ class session : public std::enable_shared_from_this<session> {
 		beast::bind_front_handler(
 		    &session::on_write,
 		    shared_from_this()));
+    }
 	// --===--- MESSAGE HANDLER --==--
 
 	void on_write(beast::error_code ec, std::size_t bytes_transferred) {
@@ -123,7 +124,7 @@ class session : public std::enable_shared_from_this<session> {
 	    // ---===--- REMOVE THIS LINE IF YOU DONT WANT INFINITE READLOOP
 	    do_read();
 	}
-    };
+    
 };
 
 // Accepts incoming connections and launches sessions
