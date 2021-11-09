@@ -73,42 +73,44 @@ class session : public std::enable_shared_from_this<session> {
     }
 
     void on_accept(beast::error_code ec) {
-	if (ec) {
-	    return fail(ec, "accept");
-	}
+        if (ec) {
+            return fail(ec, "accept");
+        }
 
-	do_read();
+        do_read();
     }
 
     void do_read() {
-	ws_.async_read(buffer_,
-		beast::bind_front_handler(
-		    &session::on_read,
-		    shared_from_this()));
+        ws_.async_read(buffer_,
+            beast::bind_front_handler(
+                &session::on_read,
+                shared_from_this()));
     }
 
 
     void on_read(beast::error_code ec, std::size_t bytes_transferred) {
-	boost::ignore_unused(bytes_transferred);
+        boost::ignore_unused(bytes_transferred);
 
-	if (ec == websocket::error::closed) {
-	    // socket connection closed
-	    return;
-	}
+        if (ec == websocket::error::closed) {
+            // socket connection closed
+            return;
+        }
 
-	if (ec) {
-	    fail(ec, "msg-read");
-	}
+        if (ec) {
+            fail(ec, "msg-read");
+        }
 
-	// ---===--- MESSAGE HANDLER ---===---
-	// EDIT THIS IF YOU WANT THIS TO DO SOMETHING DIFFERENT
-	ws_.text(ws_.got_text()); // set message type to text
+        // ---===--- MESSAGE HANDLER ---===---
+        // EDIT THIS IF YOU WANT THIS TO DO SOMETHING DIFFERENT
+        ws_.text(ws_.got_text()); // set message type to text
 
-	ws_.async_write(
-		buffer_.data(),
-		beast::bind_front_handler(
-		    &session::on_write,
-		    shared_from_this()));
+        std::cout << beast::buffers_to_string(buffer_.data()) << std::endl;
+
+        ws_.async_write(
+            buffer_.data(),
+            beast::bind_front_handler(
+                &session::on_write,
+                shared_from_this()));
     }
 	// --===--- MESSAGE HANDLER --==--
 
