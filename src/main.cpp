@@ -208,9 +208,10 @@ int main(int argc, char* argv[]) {
     for(auto i = threads - 1; i > 0; --i)
 	v.emplace_back(
 		[&ioc]
-		{
-		ioc.run();
-		});
+        {
+        ioc.run();
+        }
+    );
     ioc.run();
 
     return EXIT_SUCCESS;
